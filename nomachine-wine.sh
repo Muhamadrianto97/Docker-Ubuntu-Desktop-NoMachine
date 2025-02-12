@@ -16,21 +16,19 @@ function goto
 : loclx
 clear
 echo "https://localxpose.io/dashboard/access"
-./loclx account login
+read -p "Enter Loclx Token: " CRP
+./loclx account login --token $CRP
+
 
 clear
 echo "Repo: https://github.com/kmille36/Docker-Ubuntu-Desktop-NoMachine"
 echo "======================="
-echo "choose ngrok region (for better connection)."
+echo "choose Loclx region (for better connection)."
 echo "======================="
 echo "us - United States (Ohio)"
 echo "eu - Europe (Frankfurt)"
 echo "ap - Asia/Pacific (Singapore)"
-echo "au - Australia (Sydney)"
-echo "sa - South America (Sao Paulo)"
-echo "jp - Japan (Tokyo)"
-echo "in - India (Mumbai)"
-read -p "choose ngrok region: " CRP
+read -p "choose Loclx region: " CRP
 ./loclx tunnel tcp --region $CRP 4000 &>/dev/null &
 sleep 1
 if curl --silent --show-error http://127.0.0.1:4040/api/tunnels  > /dev/null 2>&1; then echo OK; else echo "loclx Error! Please try again!" && sleep 1 && goto loclx; fi
