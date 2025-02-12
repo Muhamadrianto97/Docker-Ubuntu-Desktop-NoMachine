@@ -1,6 +1,6 @@
-wget -O ng.sh https://github.com/kmille36/Docker-Ubuntu-Desktop-NoMachine/raw/main/ngrok.sh > /dev/null 2>&1
-chmod +x ng.sh
-./ng.sh
+wget -O loclx.sh https://github.com/muhamadrianto97/Docker-Ubuntu-Desktop-NoMachine/raw/main/loclx.sh > /dev/null 2>&1
+chmod +x loclx.sh
+./loclx.sh
 
 
 function goto
