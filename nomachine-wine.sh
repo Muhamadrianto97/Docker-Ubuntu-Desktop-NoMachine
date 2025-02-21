@@ -1,44 +1,69 @@
-wget -O loclx.sh https://github.com/muhamadrianto97/Docker-Ubuntu-Desktop-NoMachine/raw/main/loclx.sh > /dev/null 2>&1
-chmod +x loclx.sh
-./loclx.sh
+wget -O zrok.sh https://github.com/kmille36/Docker-Ubuntu-Desktop-NoMachine/raw/main/zrok.sh > /dev/null 2>&1
+chmod +x zrok.sh
+./zrok.sh
 
-
-function goto
-{
+function goto {
     label=$1
-    cd 
-    cmd=$(sed -n "/^:[[:blank:]][[:blank:]]*${label}/{:a;n;p;ba};" $0 | 
-          grep -v ':$')
+    cd
+    cmd=$(sed -n "/^:[[:blank:]][[:blank:]]*${label}/{:a;n;p;ba};" $0 | grep -v ':$')
     eval "$cmd"
     exit
 }
 
-: loclx
+: zrok
 clear
-echo "https://localxpose.io/dashboard/access"
-read -p "Enter Loclx Token: " CRP
-./loclx account login --token $CRP
+echo "Go to: https://github.com/openziti/zrok#installation to install Zrok"
+read -p "Press Enter when Zrok is installed..."
 
+# Enable Zrok (Only needed for first-time setup)
+zrok enable || { echo "Zrok setup failed!"; exit 1; }
 
 clear
 echo "Repo: https://github.com/kmille36/Docker-Ubuntu-Desktop-NoMachine"
 echo "======================="
-echo "choose Loclx region (for better connection)."
+echo "Starting Zrok Tunnel for NoMachine..."
 echo "======================="
-echo "us - United States (Ohio)"
-echo "eu - Europe (Frankfurt)"
-echo "ap - Asia/Pacific (Singapore)"
-read -p "choose Loclx region: " CRP
-./loclx tunnel tcp --region $CRP 4000 &>/dev/null &
-sleep 1
-if curl --silent --show-error http://127.0.0.1:4040/api/tunnels  > /dev/null 2>&1; then echo OK; else echo "loclx Error! Please try again!" && sleep 1 && goto loclx; fi
-docker run --rm -d --network host --privileged --name nomachine-xfce4 -e PASSWORD=123456 -e USER=user --cap-add=SYS_PTRACE --shm-size=1g thuonghai2711/nomachine-ubuntu-desktop:wine
+
+# Start a private TCP tunnel for NoMachine (port 4000)
+ZROK_ACCESS=$(zrok share private --backend-mode tcpTunnel 127.0.0.1:4000 | grep "access private" | awk '{print $5}')
+if [[ -z "$ZROK_ACCESS" ]]; then
+    echo "Zrok Error! Please try again!"
+    sleep 1
+    goto zrok
+fi
+
+# Start NoMachine Docker container
+docker run --rm -d --network host --privileged --name nomachine-xfce4 \
+    -e PASSWORD=123456 -e USER=user --cap-add=SYS_PTRACE --shm-size=1g \
+    thuonghai2711/nomachine-ubuntu-desktop:wine
+
 clear
 echo "NoMachine: https://www.nomachine.com/download"
-echo Done! NoMachine Information:
-echo IP Address:
-curl --silent --show-error http://127.0.0.1:4040/api/tunnels | sed -nE 's/.*public_url":"tcp:..([^"]*).*/\1/p' 
-echo User: user
-echo Passwd: 123456
+echo "Done! NoMachine Information:"
+echo "======================="
+echo "🔹 **Akses NoMachine dengan Zrok dari komputer lain:**"
+echo ""
+echo "1️⃣ Jalankan perintah ini di komputer klien:"
+echo "   zrok access private $ZROK_ACCESS"
+echo ""
+echo "2️⃣ Setelah itu, hubungkan NoMachine ke **127.0.0.1:9191**"
+echo ""
+echo "======================="
+echo "User: user"
+echo "Passwd: 123456"
+echo "======================="
 echo "VM can't connect? Restart Cloud Shell then Re-run script."
-seq 1 43200 | while read i; do echo -en "\r Running .     $i s /43200 s";sleep 0.1;echo -en "\r Running ..    $i s /43200 s";sleep 0.1;echo -en "\r Running ...   $i s /43200 s";sleep 0.1;echo -en "\r Running ....  $i s /43200 s";sleep 0.1;echo -en "\r Running ..... $i s /43200 s";sleep 0.1;echo -en "\r Running     . $i s /43200 s";sleep 0.1;echo -en "\r Running  .... $i s /43200 s";sleep 0.1;echo -en "\r Running   ... $i s /43200 s";sleep 0.1;echo -en "\r Running    .. $i s /43200 s";sleep 0.1;echo -en "\r Running     . $i s /43200 s";sleep 0.1; done
+
+# Infinite loop to keep script running
+seq 1 43200 | while read i; do 
+    echo -en "\r Running .     $i s /43200 s"; sleep 0.1
+    echo -en "\r Running ..    $i s /43200 s"; sleep 0.1
+    echo -en "\r Running ...   $i s /43200 s"; sleep 0.1
+    echo -en "\r Running ....  $i s /43200 s"; sleep 0.1
+    echo -en "\r Running ..... $i s /43200 s"; sleep 0.1
+    echo -en "\r Running     . $i s /43200 s"; sleep 0.1
+    echo -en "\r Running  .... $i s /43200 s"; sleep 0.1
+    echo -en "\r Running   ... $i s /43200 s"; sleep 0.1
+    echo -en "\r Running    .. $i s /43200 s"; sleep 0.1
+    echo -en "\r Running     . $i s /43200 s"; sleep 0.1
+done
