@@ -1,4 +1,4 @@
-wget -O zrok.sh https://github.com/kmille36/Docker-Ubuntu-Desktop-NoMachine/raw/main/zrok.sh > /dev/null 2>&1
+wget -O zrok.sh https://github.com/Muhamadrianto97/Docker-Ubuntu-Desktop-NoMachine/raw/refs/heads/main/zrok.sh > /dev/null 2>&1
 chmod +x zrok.sh
 ./zrok.sh
 
